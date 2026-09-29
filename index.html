@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gather Style: Event Management Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2EFE6;--card:#FAF8F1;--ink:#2A2620;--muted:#6B6455;--line:#E0DAC8;--spruce:#2E4B3F;--clay:#C26A3D;--r:6px}
+html.dark{--bg:#1E1D19;--card:#26251F;--ink:#F1EAD9;--muted:#B9B0A0;--line:#3A382E;--spruce:#9CC4A8;--clay:#E08E5A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Barlow,sans-serif;font-size:14.5px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',monospace}
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:var(--card);border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 14px}
+.mark{width:32px;height:32px;border-radius:8px;background:var(--spruce);color:#fff;display:grid;place-items:center;font-weight:700}
+.navsec{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);padding:10px 10px 4px;text-transform:uppercase}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);text-decoration:none;color:var(--ink);font-weight:500;font-size:14px;border:1px solid transparent}
+.nav a svg{width:17px;height:17px;flex:none}
+.nav a.on{background:var(--bg);border-color:var(--line);font-weight:700}
+.nav a:hover{background:var(--bg)}
+.profileside{margin-top:auto;border-top:1px solid var(--line);padding-top:12px;display:flex;gap:10px;align-items:center}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--clay);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 30px;display:flex;align-items:center;gap:14px}
+.search{flex:1;max-width:420px;display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:9px 13px}
+.search input{border:0;background:transparent;outline:none;width:100%;font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:var(--r);padding:9px 15px;font-weight:600;font-size:13.5px;cursor:pointer;min-height:40px}
+.btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btnp{background:var(--spruce);border:1px solid var(--spruce);color:#fff;border-radius:var(--r);padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer;min-height:40px}
+.btnp:hover{background:var(--ink);border-color:var(--ink)}
+.wrap{max-width:1180px;width:100%;margin:0 auto;padding:26px 30px;display:flex;flex-direction:column;gap:22px}
+.greet{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.greet h1{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.greet p{color:var(--muted);margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.stat .k{font-size:13px;color:var(--muted);font-weight:500}
+.stat .v{font-size:28px;font-weight:700;margin:4px 0 2px;letter-spacing:-.01em}
+.stat .d{font-size:12.5px;color:var(--muted)}
+.stat .d b{color:var(--spruce)}
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.ph{padding:15px 18px;border-bottom:1px solid var(--line)}
+.ph b{font-size:15.5px}.ph p{font-size:12.5px;color:var(--muted)}
+.evgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 18px}
+.ev{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.evimg{height:96px;display:flex;align-items:flex-end;padding:10px 12px;color:#fff;font-weight:700;font-size:14px}
+.track{height:6px;background:var(--card);border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+.fill{height:100%}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line)}
+.chips button{font-family:'IBM Plex Mono',monospace;font-size:11.5px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:6px 12px;cursor:pointer}
+.chips button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line)}
+.filters input,.filters select{font-size:13px;padding:9px 11px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);color:var(--ink);min-height:40px;width:100%}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:12px;text-align:left;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{padding-left:18px}th:last-child,td:last-child{padding-right:18px}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:hover{background:var(--bg)}
+.tier{font-family:'IBM Plex Mono',monospace;font-size:11px;border:1px solid var(--line);border-radius:99px;padding:3px 9px;white-space:nowrap}
+.tier.v{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tgl{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 12px;border-radius:99px;border:1px solid var(--line);cursor:pointer;background:transparent;color:var(--ink);min-height:36px}
+.tgl.on{background:var(--spruce);border-color:var(--spruce);color:#fff}
+.tgl:hover{background:var(--ink);color:var(--bg)}
+.srow{padding:12px 18px;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:0}
+.kv{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border:0}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.steps div{padding:11px 8px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);border-right:1px solid var(--line)}
+.steps div:last-child{border:0}.steps div.on{background:var(--ink);color:var(--bg);font-weight:600}
+.fbody{padding:18px;display:flex;flex-direction:column;gap:14px}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
+.inp{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;min-height:42px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--clay);display:none;margin-top:4px}
+.up{border:1px dashed var(--muted);border-radius:var(--r);background:var(--bg);padding:22px;text-align:center;cursor:pointer;font-size:13px}
+.up:hover{border-color:var(--ink)}
+footer{border-top:1px solid var(--line);background:var(--card);padding:13px 30px;display:flex;gap:14px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:12px;flex-wrap:wrap}
+.sk{background:var(--bg);border-radius:3px;min-height:13px;position:relative;overflow:hidden}
+.sk::after{content:"";position:absolute;inset:0;background:var(--line);opacity:.5;animation:bl 1.1s steps(2) infinite}
+@keyframes bl{50%{opacity:.15}}
+.modal-bg{position:fixed;inset:0;background:rgba(42,38,32,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:8px;max-width:500px;width:100%}
+:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+@media(max-width:1020px){.shell{grid-template-columns:1fr}aside{position:static;height:auto}.stats{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.evgrid{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside><div class="brand"><div class="mark">G</div><div><b>Gather</b><div class="mono" style="font-size:10px;color:var(--muted);letter-spacing:.1em">WORKSPACE</div></div></div>
+<div class="navsec">Workspace</div><nav class="nav">
+<a href="#overview" class="on"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>Dashboard</a>
+<a href="#events"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11"/><path d="M2 6h12"/></svg>Events</a>
+<a href="#attendees"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.4"/><path d="M3 13c.8-2.8 2.8-4 5-4s4.2 1.2 5 4"/></svg>Attendees</a>
+<a href="#create"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5.5V11M5.5 8H11"/></svg>Create Event</a>
+</nav><div class="navsec">Preferences</div><nav class="nav"><a href="#footer"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2"/></svg>Settings</a></nav>
+<div class="profileside"><div class="avatar">MO</div><div style="font-size:13px"><b>Mara Organizer</b><div class="mono" style="font-size:11px;color:var(--muted)">Event Organizer</div></div></div></aside>
+<main>
+<div class="top"><div style="font-weight:700">Workspace</div><div class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M11 11l3 3"/></svg><input id="topSearch" placeholder="Search" aria-label="Search"></div><div style="margin-left:auto;display:flex;gap:10px;align-items:center"><button class="btn mono" id="bellBtn" style="font-size:12px">3 alerts</button><div class="avatar">MO</div></div></div>
+<div class="wrap" id="overview">
+<div class="greet"><div><h1>Good morning, Mara.</h1><p>Here is what is happening with your events today.</p></div><button class="btnp" id="newBtn">Create event</button></div>
+<section class="stats">
+<div class="stat"><div class="k">Total Tickets Sold</div><div class="v" id="stSold">2,845</div><div class="d"><b>+12.8%</b> vs last month</div></div>
+<div class="stat"><div class="k">Revenue Generated</div><div class="v">$48,750</div><div class="d"><b>+8.2%</b> vs last month</div></div>
+<div class="stat"><div class="k">Total Check-ins</div><div class="v" id="stIn">1,920</div><div class="d">Across all events</div></div>
+<div class="stat"><div class="k">Active Events</div><div class="v">12</div><div class="d">4 happening this week</div></div>
+</section>
+<div class="cols">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<section class="panel" id="events"><div class="ph"><b>Upcoming Events</b><p>Keep track of your next events and ticket sales.</p></div>
+<div class="chips" id="typeChips"><button class="on" data-t="">All event types</button><button data-t="Music">Music</button><button data-t="Technology">Technology</button><button data-t="Workshop">Workshop</button></div>
+<div class="evgrid" id="eventGrid"></div></section>
+<section class="panel" id="attendees"><div class="ph"><b>Attendee Management</b><p>Search registrations and manage event check-ins.</p></div>
+<div class="filters"><input id="q" placeholder="Filter by name..." aria-label="Filter by name"><select id="tierF" aria-label="Ticket type"><option value="">All ticket types</option><option>VIP</option><option>Regular</option><option>Early Bird</option></select><select id="statusF" aria-label="Status"><option value="">All statuses</option><option>Checked In</option><option>Pending</option></select></div>
+<div style="overflow-x:auto"><table><thead><tr><th>Attendee</th><th>Event</th><th>Ticket</th><th>Price</th><th>Check-in status</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<section class="panel"><div class="ph"><b>Ticket sales overview</b><p>Sales progress for your upcoming events.</p></div><div id="salesBars"></div></section>
+<section class="panel"><div class="ph"><b>Quick summary</b><p>Your event activity at a glance.</p></div><div style="padding:6px 18px 14px"><div class="kv"><span>Check-in rate</span><b>67%</b></div><div class="kv"><span>Upcoming in next 30 days</span><b>6 events</b></div><div class="kv"><span>Attendees registered</span><b id="regCount">10</b></div></div></section>
+</div>
+</div>
+<section class="panel" id="create"><div class="ph"><b>Create New Event</b><p>Set up an event in a few simple steps.</p></div>
+<div class="steps" id="stepsBar"><div class="on" data-s="1">1 / Event information</div><div data-s="2">2 / Date and location</div><div data-s="3">3 / Tickets</div><div data-s="4">4 / Cover photo</div></div>
+<div class="fbody">
+<div class="fstep" data-p="1"><div class="row2"><div><label for="fTitle">Event name</label><input class="inp" id="fTitle" placeholder="Harbor Lights Jazz Night"><div class="err" id="eTitle">Please enter at least 4 characters.</div></div><div><label for="fType">Event type</label><select class="inp" id="fType"><option>Music</option><option>Technology</option><option>Workshop</option><option>Business</option></select></div></div><div style="margin-top:12px"><label for="fDesc">Description</label><input class="inp" id="fDesc" placeholder="A short line about the night"></div></div>
+<div class="fstep" data-p="2" hidden><div class="row2"><div><label for="fDate">Event date</label><input class="inp" id="fDate" type="date"><div class="err" id="eDate">Please pick a future date.</div></div><div><label for="fTime">Start time</label><input class="inp" id="fTime" type="time" value="19:00"></div></div><div class="row2" style="margin-top:12px"><div><label for="fVenue">Venue</label><input class="inp" id="fVenue" placeholder="Pier 9 Hall"><div class="err" id="eVenue">Please enter a venue.</div></div><div><label for="fCity">City</label><input class="inp" id="fCity" placeholder="Bay District"></div></div></div>
+<div class="fstep" data-p="3" hidden><div class="row2"><div><label for="fTier">Ticket type</label><select class="inp" id="fTier"><option>Regular</option><option>VIP</option><option>Early Bird</option></select></div><div><label for="fPrice">Ticket price (USD)</label><input class="inp" id="fPrice" type="number" value="45"><div class="err" id="ePrice">Minimum 1.</div></div></div><div style="margin-top:12px"><label for="fCap">Total tickets</label><input class="inp" id="fCap" type="number" value="300"><div class="err" id="eCap">Minimum 10.</div></div></div>
+<div class="fstep" data-p="4" hidden><label>Cover photo</label><div class="up" id="upBox" tabindex="0">Choose a cover image<div class="mono" style="font-size:11.5px;color:var(--muted);margin-top:4px">PNG or JPG image file, up to 5 MB. This step is optional.</div><input type="file" id="fFile" accept=".jpg,.jpeg,.png" hidden></div><div class="err" id="eFile">File must be JPG or PNG under 5 MB.</div></div>
+<div style="display:flex;gap:10px;align-items:center"><button class="btn" id="backBtn" disabled>Previous</button><span class="mono" id="stepLabel" style="font-size:12px;color:var(--muted)">Step 1 of 4</span><span style="margin-left:auto;display:flex;gap:10px"><button class="btn" id="nextBtn">Next step</button><button class="btnp" id="pubBtn" hidden>Create event</button></span></div>
+</div></section>
+</div>
+<footer id="footer"><span>All Systems Operational</span><span class="mono" style="color:var(--muted)">Last updated 09:41</span><button class="btn mono" id="exportBtn" style="font-size:12px">Export attendees</button><button class="btn mono" id="themeBtn" style="font-size:12px">Dark mode</button><span class="mono" style="margin-left:auto;color:var(--muted)">© 2026 Gather Events</span><a href="#" onclick="return false" style="color:var(--muted)">Terms of Service</a><a href="#" onclick="return false" style="color:var(--muted)">Privacy Policy</a></footer>
+</main></div>
+<div class="modal-bg" id="modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" style="padding:22px"><h2 id="mTitle" style="font-size:20px">Event</h2><p id="mCode" class="mono" style="font-size:12px;color:var(--muted);margin:4px 0 10px">CODE</p><div id="mBody" style="display:flex;flex-direction:column;gap:8px"></div><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" id="mClose" style="flex:1">Close</button><button class="btnp" id="mCopy" style="flex:1">Copy gate code</button></div></div></div>
+<div id="toast" class="mono" style="position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:12px;padding:10px 18px;border-radius:6px;display:none"></div>
+<script>
+const events=[{id:1,type:"Music",title:"Harbor Lights Jazz Night",venue:"Pier 9 Hall",date:"Oct 18, 2026",sold:486,cap:600,price:45,code:"HL-0418-A",c:"#2E4B3F"},{id:2,type:"Technology",title:"Founders Summit 2026",venue:"Meridian Center",date:"Nov 02, 2026",sold:1120,cap:1500,price:180,code:"FS-1102-M",c:"#8A6D1B"},{id:3,type:"Workshop",title:"Print and Clay Workshop",venue:"Studio North",date:"Nov 09, 2026",sold:38,cap:60,price:65,code:"PC-1109-S",c:"#B65A2E"},{id:4,type:"Music",title:"Riverside Film Premiere",venue:"Orpheum Annex",date:"Nov 21, 2026",sold:210,cap:420,price:28,code:"RF-1121-O",c:"#2E4B3F"}];
+let guests=[{n:"Amara Osei",e:"Founders Summit 2026",t:"VIP",p:180,d:"Oct 02",s:"Checked In"},{n:"Jonas Lindqvist",e:"Harbor Lights Jazz Night",t:"Regular",p:45,d:"Oct 03",s:"Checked In"},{n:"Priya Nair",e:"Harbor Lights Jazz Night",t:"Early Bird",p:32,d:"Oct 04",s:"Pending"},{n:"Diego Fuentes",e:"Riverside Film Premiere",t:"VIP",p:60,d:"Oct 05",s:"Pending"},{n:"Sara Haddad",e:"Print and Clay Workshop",t:"Regular",p:65,d:"Oct 06",s:"Checked In"},{n:"Tom Becker",e:"Winter Makers Market",t:"Early Bird",p:9,d:"Oct 07",s:"Pending"},{n:"Liu Wen",e:"Founders Summit 2026",t:"VIP",p:180,d:"Oct 08",s:"Checked In"},{n:"Grace Adeyemi",e:"Choir at the Rotunda",t:"Regular",p:22,d:"Oct 09",s:"Pending"},{n:"Omar Farah",e:"Founders Summit 2026",t:"Regular",p:180,d:"Oct 10",s:"Pending"},{n:"Elena Ruiz",e:"Harbor Lights Jazz Night",t:"VIP",p:90,d:"Oct 11",s:"Checked In"}];
+let typeF="";
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function renderEvents(sk){const g=document.getElementById('eventGrid');g.innerHTML='';const list=sk?[0,1]:(typeF?events.filter(e=>e.type===typeF):events);
+list.forEach(ev=>{const d=document.createElement('div');d.className='ev';
+if(sk){d.innerHTML='<div style="height:96px" class="sk"></div><div style="padding:12px"><div class="sk"></div><div class="sk" style="width:60%;margin-top:8px"></div></div>';}
+else{const pct=Math.round(ev.sold/ev.cap*100);
+d.innerHTML=`<div class="evimg" style="background:${ev.c}">${ev.type} / ${ev.date}</div><div style="padding:12px"><b>${ev.title}</b><div class="mono" style="font-size:11.5px;color:var(--muted);margin-top:2px">${ev.venue} / $${ev.price} / ${ev.code}</div><div class="track"><div class="fill" style="width:${pct}%;background:${ev.c}"></div></div><div class="mono" style="font-size:11.5px;margin-top:6px">${ev.sold} of ${ev.cap} sold (${pct} percent)</div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn mono" style="flex:1;font-size:11.5px" data-prev="${ev.id}">Preview</button><button class="btn mono" style="flex:1;font-size:11.5px" data-bump="${ev.id}">Log 10 sales</button></div></div>`;}
+g.appendChild(d);});
+const sb=document.getElementById('salesBars');sb.innerHTML='';
+(events).forEach(ev=>{const pct=Math.round(ev.sold/ev.cap*100);const r=document.createElement('div');r.className='srow';
+r.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px"><b>${ev.title}</b><span class="mono" style="font-size:11.5px;color:var(--muted)">${pct}%</span></div><div class="track"><div class="fill" style="width:${pct}%;background:${ev.c}"></div></div>`;sb.appendChild(r);});}
+function renderRows(){const q=document.getElementById('q').value.toLowerCase(),tf=document.getElementById('tierF').value,sf=document.getElementById('statusF').value;
+const tb=document.getElementById('rows');tb.innerHTML='';
+const f=guests.filter(g=>(!q||g.n.toLowerCase().includes(q))&&(!tf||g.t===tf)&&(!sf||g.s===sf));
+document.getElementById('regCount').textContent=f.length;
+f.forEach(g=>{const tr=document.createElement('tr');tr.innerHTML=`<td><b>${g.n}</b><div class="mono" style="font-size:11px;color:var(--muted)">Reg. ${g.d}</div></td><td>${g.e}</td><td><span class="tier ${g.t==='VIP'?'v':''}">${g.t}</span></td><td class="mono">$${g.p}</td><td><button class="tgl ${g.s==='Checked In'?'on':''}" data-i="${guests.indexOf(g)}">${g.s}</button></td><td><button class="btn mono" style="font-size:11px;padding:6px 10px;min-height:32px" data-prev-g="${guests.indexOf(g)}">View</button></td>`;tb.appendChild(tr);});
+if(!f.length)tb.innerHTML='<tr><td colspan="6" class="mono" style="padding:18px;font-size:12px;color:var(--muted)">No registrations match these filters.</td></tr>';}
+renderEvents(true);renderRows();setTimeout(()=>renderEvents(false),1000);
+document.getElementById('typeChips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;typeF=b.dataset.t;document.querySelectorAll('#typeChips button').forEach(x=>x.classList.toggle('on',x===b));renderEvents(false);});
+document.getElementById('eventGrid').addEventListener('click',e=>{const p=e.target.dataset.prev,b=e.target.dataset.bump;
+if(b){const ev=events.find(x=>x.id==b);ev.sold=Math.min(ev.cap,ev.sold+10);renderEvents(false);toast('Logged 10 sales for '+ev.title);}
+if(p){const ev=events.find(x=>x.id==p);document.getElementById('mTitle').textContent=ev.title;document.getElementById('mCode').textContent='Gate code '+ev.code+' / '+ev.date;
+document.getElementById('mBody').innerHTML=`<div>Venue: <b>${ev.venue}</b></div><div>Sales: <b>${ev.sold} of ${ev.cap}</b></div><div>Gross: <b>$${(ev.sold*ev.price).toLocaleString()}</b></div>`;document.getElementById('modal').classList.add('open');}});
+document.getElementById('rows').addEventListener('click',e=>{const t=e.target.closest('.tgl');const v=e.target.dataset.prevG;
+if(t){const g=guests[t.dataset.i];g.s=g.s==='Checked In'?'Pending':'Checked In';renderRows();}
+if(v!==undefined){const g=guests[v];document.getElementById('mTitle').textContent=g.n;document.getElementById('mCode').textContent=g.t+' / '+g.e;document.getElementById('mBody').innerHTML=`<div>Ticket: <b>${g.t} ($${g.p})</b></div><div>Status: <b>${g.s}</b></div><div>Registered: <b>${g.d}</b></div>`;document.getElementById('modal').classList.add('open');}});
+['q','tierF','statusF'].forEach(id=>document.getElementById(id).addEventListener('input',renderRows));
+document.getElementById('topSearch').addEventListener('input',e=>{document.getElementById('q').value=e.target.value;renderRows();});
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.id==='mClose')document.getElementById('modal').classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('modal').classList.remove('open');});
+document.getElementById('mCopy').onclick=()=>{try{navigator.clipboard.writeText(document.getElementById('mCode').textContent)}catch(_){} toast('Gate code copied.');};
+let step=1;const next=document.getElementById('nextBtn'),back=document.getElementById('backBtn'),pub=document.getElementById('pubBtn');
+function showStep(){document.querySelectorAll('.fstep').forEach(s=>s.hidden=s.dataset.p!=step);document.querySelectorAll('#stepsBar div').forEach(s=>s.classList.toggle('on',s.dataset.s==step));document.getElementById('stepLabel').textContent='Step '+step+' of 4';back.disabled=step===1;next.hidden=step===4;pub.hidden=step!==4;}
+function valid(s){let ok=true;const need=(id,eid,fn)=>{const v=document.getElementById(id).value.trim();const bad=!fn(v);document.getElementById(eid).style.display=bad?'block':'none';if(bad)ok=false;};
+if(s===1){need('fTitle','eTitle',v=>v.length>=4);}
+if(s===2){const d=document.getElementById('fDate').value;const bad=!d||new Date(d)<=new Date(new Date().toDateString());document.getElementById('eDate').style.display=bad?'block':'none';if(bad)ok=false;need('fVenue','eVenue',v=>v.length>=3);}
+if(s===3){need('fPrice','ePrice',v=>+v>=1);need('fCap','eCap',v=>+v>=10);}
+if(s===4){const f=document.getElementById('fFile').files[0];if(f){const bad=!/\.(jpe?g|png)$/i.test(f.name)||f.size>5*1024*1024;document.getElementById('eFile').style.display=bad?'block':'none';if(bad)ok=false;}}
+return ok;}
+next.onclick=()=>{if(!valid(step))return;if(step<4){step++;showStep();}};
+back.onclick=()=>{if(step>1){step--;showStep();}};
+pub.onclick=()=>{if(!valid(4))return;const t=document.getElementById('fTitle').value;events.unshift({id:Date.now(),type:document.getElementById('fType').value,title:t,date:document.getElementById('fDate').value||'TBA',venue:document.getElementById('fVenue').value||'TBA',sold:0,cap:+document.getElementById('fCap').value||100,price:+document.getElementById('fPrice').value||20,code:'NW-'+Math.floor(Math.random()*9000),c:'#2E4B3F'});renderEvents(false);toast('Published: '+t);step=1;showStep();};
+showStep();
+document.getElementById('upBox').onclick=()=>document.getElementById('fFile').click();
+document.getElementById('newBtn').onclick=()=>document.getElementById('create').scrollIntoView({behavior:'smooth'});
+document.getElementById('bellBtn').onclick=()=>toast('3 alerts: scanner offline, 42 will call holds, refunds close Friday.');
+document.getElementById('exportBtn').onclick=()=>{let csv='Name,Event,Tier,Price,Status\n'+guests.map(g=>[g.n,g.e,g.t,g.p,g.s].join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='attendees.csv';a.click();toast('Attendee list exported.');};
+const th=document.getElementById('themeBtn');th.onclick=()=>{const d=document.documentElement.classList.toggle('dark');th.textContent=d?'Light mode':'Dark mode';};
+</script>
+</body>
+</html>
